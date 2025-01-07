@@ -1,0 +1,123 @@
+<!-- auth.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication</title>
+    <link rel="stylesheet" href="../css/loginpage.css">
+
+</head>
+<body>
+    <div class="auth-container">
+        <h1>Authentication</h1>
+        
+        <!-- Authentication Forms -->
+        <div id="register-form" style="display: block;">
+            <h2>Register</h2>
+            <input type="email" id="register-email" placeholder="Email">
+            <input type="password" id="register-password" placeholder="Password">
+            <button onclick="registerUser()">Register</button>
+            <p>Already have an account? <a href="#" onclick="showLoginForm()">Login</a></p>
+        </div>
+
+        <div id="login-form" style="display: none;">
+            <h2>Login</h2>
+            <input type="email" id="login-email" placeholder="Email">
+            <input type="password" id="login-password" placeholder="Password">
+            <button onclick="loginUser()">Login</button>
+            <p>Don't have an account? <a href="#" onclick="showRegisterForm()">Register</a></p>
+        </div>
+
+        <!-- After Login -->
+        <div id="user-dashboard" style="display: none;">
+            <h2>Welcome, <span id="user-name"></span></h2>
+            <button onclick="logoutUser()">Logout</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Show Register Form
+        function showRegisterForm() {
+            document.getElementById("register-form").style.display = "block";
+            document.getElementById("login-form").style.display = "none";
+        }
+
+        // Show Login Form
+        function showLoginForm() {
+            document.getElementById("register-form").style.display = "none";
+            document.getElementById("login-form").style.display = "block";
+        }
+
+        // Register User
+        function registerUser() {
+            const email = document.getElementById("register-email").value;
+            const password = document.getElementById("register-password").value;
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    showUserDashboard(user);
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    alert("Error: " + errorMessage);
+                });
+        }
+
+        // Login User
+        function loginUser() {
+            const email = document.getElementById("login-email").value;
+            const password = document.getElementById("login-password").value;
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    showUserDashboard(user);
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    alert("Error: " + errorMessage);
+                });
+        }
+
+        // Show User Dashboard
+        function showUserDashboard(user) {
+            document.getElementById("login-form").style.display = "none";
+            document.getElementById("register-form").style.display = "none";
+            document.getElementById("user-dashboard").style.display = "block";
+            document.getElementById("user-name").textContent = user.email;
+        }
+
+        // Logout User
+        function logoutUser() {
+            auth.signOut()
+                .then(() => {
+                    document.getElementById("user-dashboard").style.display = "none";
+                    showLoginForm();
+                })
+                .catch((error) => {
+                    alert("Error: " + error.message);
+                });
+        }
+    </script>
+</body>
+</html>
