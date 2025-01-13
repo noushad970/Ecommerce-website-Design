@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'db.php';
+
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
     echo "<div style='text-align: center; font-family: Arial, sans-serif;'>
@@ -11,17 +12,13 @@ if (!isset($_SESSION['user_id'])) {
   </div>";
 exit;
 }
-// if (!isset($_SESSION['user_id'])) {
-//     header("Location: login.html");
-//     exit;
-// }
-
 $user_id = $_SESSION['user_id'];
 
-$sql = "SELECT c.id AS cart_id, p.name, p.price 
-        FROM cart_items c 
-        JOIN products p ON c.product_id = p.id 
-        WHERE c.user_id = ?";
+$sql = "SELECT o.id AS order_id, o.order_date, p.name AS product_name, p.price 
+        FROM orders o 
+        JOIN order_items oi ON o.id = oi.order_id 
+        JOIN products p ON oi.product_id = p.id 
+        WHERE o.user_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -32,39 +29,29 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
-    <title>View Cart</title>
+    <title>Order History</title>
 </head>
 <body>
     <div class="container">
         <nav>
             <a href="index.html">Home</a>
             <a href="products.php">Products</a>
-            <a href="order_history.php">Order History</a>
             <a href="logout.php">Logout</a>
         </nav>
-        <h2>Your Cart</h2>
+        <h2>Your Order History</h2>
         <?php if ($result->num_rows > 0): ?>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($cart = $result->fetch_assoc()): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($cart['name']); ?></td>
-                            <td>$<?php echo htmlspecialchars($cart['price']); ?></td>
-                        </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-            <form action="complete_order.php" method="post">
-                <button type="submit">Complete Order</button>
-            </form>
+            <ul>
+                <?php while ($order = $result->fetch_assoc()): ?>
+                    <li>
+                        <strong>Order ID:</strong> <?php echo $order['order_id']; ?><br>
+                        <strong>Product:</strong> <?php echo htmlspecialchars($order['product_name']); ?><br>
+                        <strong>Price:</strong> $<?php echo htmlspecialchars($order['price']); ?><br>
+                        <strong>Date:</strong> <?php echo htmlspecialchars($order['order_date']); ?>
+                    </li>
+                <?php endwhile; ?>
+            </ul>
         <?php else: ?>
-            <p>Your cart is empty.</p>
+            <p>You have no completed orders.</p>
         <?php endif; ?>
     </div>
 </body>

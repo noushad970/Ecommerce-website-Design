@@ -32,5 +32,12 @@ $result = $conn->query($sql);
     <form action="complete_order.php" method="POST">
         <button type="submit">Complete Order</button>
     </form>
+    <nav>
+    <a href="index.html">Home</a>
+    <a href="view_cart.php">View Cart</a>
+    <a href="order_history.php">Order History</a>
+    
+</nav>
+
 </body>
 </html>

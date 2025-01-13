@@ -2,16 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Homepage</title>
+    <title>Home</title>
 </head>
 <body>
-    <h1>Welcome to the E-Commerce Website</h1>
-    <nav>
-        <a href="signup.php">Sign Up</a>
-        <a href="login.php">Login</a>
-        <a href="products.php">Products</a>
-    </nav>
+    <div class="container">
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="products.php">Products</a>
+            <a href="view_cart.php">View Cart</a>
+            <a href="order_history.php">Order History</a>
+            <a href="logout.php">Logout</a>
+            <a href="login.php">Login</a>
+            <a href="signup.php">Signup</a>
+        </nav>
+        
+        <div class="username">Hello, <?php echo htmlspecialchars($_SESSION['username']); ?>!</div>
+        <h1>Welcome to Our Store</h1>
+        
+        <button onclick="window.location.href='products.php'">View Products</button>
+    </div>
 </body>
 </html>
